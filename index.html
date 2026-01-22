@@ -6,47 +6,52 @@
     <title>Professional PT Planner - Rai Institute Standard</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root { --primary: #4f46e5; --bg: #f1f5f9; --text: #0f172a; --accent: #10b981; --warning: #f59e0b; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 10px; display: flex; justify-content: center; min-height: 100vh; margin: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); padding: 10px; display: flex; justify-content: center; min-height: 100vh; margin: 0; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; box-sizing: border-box; }
         
         h2 { text-align: center; color: var(--primary); margin: 0; font-size: 1.5rem; }
         .subtitle { text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .input-group { margin-bottom: 10px; }
+        .input-group { margin-bottom: 12px; }
         label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.75rem; color: #475569; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; transition: 0.3s; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1.5px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 0.95rem; transition: 0.3s; }
         textarea { resize: none; font-family: inherit; }
-        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
         
-        .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .btn-pdf { width: 100%; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 20px; display: none; align-items: center; justify-content: center; gap: 10px; }
+        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 14px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); background: #4338ca; }
 
-        /* Hasil Area - Dioptimalkan untuk PDF */
-        .result-section { margin-top: 20px; display: none; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; }
-        .mode-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
-        .mode-fatloss { background: #fee2e2; color: #ef4444; }
-        .mode-recomp { background: #dcfce7; color: #166534; border: 1px solid #166534; }
+        /* Hasil Area */
+        .result-section { margin-top: 25px; display: none; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 20px; padding: 20px; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .client-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .client-header h3 { margin: 0; color: var(--primary); text-transform: uppercase; font-size: 1.1rem; }
+        .mode-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
+        .mode-fatloss { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; }
+        .mode-recomp { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 
-        .total-box { background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 12px; }
-        .total-box strong { font-size: 1.4rem; display: block; }
+        .client-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .client-header h3 { margin: 0; color: var(--primary); text-transform: uppercase; font-size: 1.2rem; }
 
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        .res-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
-        .res-card small { display: block; font-size: 0.6rem; color: #64748b; font-weight: bold; }
-        .res-card span { font-weight: bold; }
+        .total-box { background: var(--primary); color: white; padding: 15px; border-radius: 16px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .total-box small { font-size: 0.8rem; opacity: 0.9; display: block; margin-bottom: 2px; }
+        .total-box strong { font-size: 1.6rem; display: block; }
 
-        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .macro-item { padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; font-weight: bold; font-size: 0.9rem; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+        .res-card { background: #f8fafc; padding: 12px; border-radius: 14px; border: 1px solid #e2e8f0; text-align: center; }
+        .res-card small { display: block; font-size: 0.65rem; color: #64748b; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+        .res-card span { font-weight: bold; font-size: 1.1rem; color: var(--text); }
+
+        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .macro-item { padding: 10px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; font-weight: bold; }
+        .macro-item span { display: block; font-size: 0.6rem; opacity: 0.8; margin-bottom: 2px; }
         
-        #chart-container { width: 100%; max-width: 230px; margin: 10px auto; }
-        .trainer-note-area { margin-top: 15px; padding: 10px; background: #fffbeb; border-left: 4px solid var(--warning); border-radius: 4px; font-size: 0.8rem; font-style: italic; }
+        #chart-container { width: 100%; max-width: 280px; margin: 10px auto; }
+        
+        .trainer-note-area { margin-top: 20px; padding: 15px; background: #fffbeb; border-left: 5px solid var(--warning); border-radius: 8px; font-size: 0.85rem; line-height: 1.5; color: #92400e; }
+        .trainer-note-area strong { display: block; margin-bottom: 5px; color: #b45309; font-size: 0.75rem; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -57,7 +62,7 @@
 
     <div class="input-group">
         <label>Nama Klien</label>
-        <input type="text" id="client_name" placeholder="Nama Klien...">
+        <input type="text" id="client_name" placeholder="Masukkan nama...">
     </div>
 
     <div style="display: flex; gap: 10px;">
@@ -67,7 +72,7 @@
 
     <div style="display: flex; gap: 10px;">
         <div class="input-group" style="flex: 1;">
-            <label>NEAT</label>
+            <label>NEAT (Aktivitas)</label>
             <select id="neat_lvl">
                 <option value="0.1">10% (Sedentary)</option>
                 <option value="0.2" selected>20% (Active)</option>
@@ -89,48 +94,48 @@
     </div>
 
     <div class="input-group">
-        <label>Catatan Strategis Trainer (Opsional)</label>
-        <textarea id="trainer_input" rows="2" placeholder="Tulis pesan penyemangat atau fokus latihan minggu ini..."></textarea>
+        <label>Catatan Strategis Trainer</label>
+        <textarea id="trainer_input" rows="2" placeholder="Fokus minggu ini: Repetisi 12-15..."></textarea>
     </div>
 
     <button class="btn-main" onclick="calculate()">Generate Program 🚀</button>
 
-    <div id="capture-area">
-        <div class="result-section" id="results">
-            <div id="mode_label" class="mode-badge">MODE</div>
-            <div class="client-header">
-                <h3 id="res_name">NAMA</h3>
-                <span id="res_date" style="font-size: 0.7rem; color: #64748b;"></span>
-            </div>
-
-            <div class="total-box">Target Intake: <strong id="res_intake">0</strong></div>
-
-            <div class="res-grid">
-                <div class="res-card"><small>EST. FAT LOSS</small><span id="res_fat_loss">0</span> kg</div>
-                <div class="res-card"><small>EST. WAKTU</small><span id="res_time">0</span> Minggu</div>
-            </div>
-
-            <div class="macro-grid">
-                <div class="macro-item" style="background:#eef2ff; color:#4338ca;">P: <span id="m_prot">0</span>g</div>
-                <div class="macro-item" style="background:#f0fdf4; color:#15803d;">L: <span id="m_fat">0</span>g</div>
-                <div class="macro-item" style="background:#fffbeb; color:#b45309;">K: <span id="m_carb">0</span>g</div>
-            </div>
-            
-            <div id="chart-container">
-                <canvas id="macroPieChart"></canvas>
-            </div>
-
-            <div id="display_note" class="trainer-note-area" style="display: none;"></div>
-            
-            <p style="font-size: 0.55rem; color: #94a3b8; text-align: center; margin-top: 15px; border-top: 1px dotted #e2e8f0; padding-top: 10px;">
-                Analisis Strategis - Rai Institute Standard - Dibuat secara otomatis untuk presisi diet.
-            </p>
+    <div class="result-section" id="results">
+        <div id="mode_label" class="mode-badge">MODE</div>
+        <div class="client-header">
+            <h3 id="res_name">NAMA</h3>
+            <span id="res_date" style="font-size: 0.75rem; color: #64748b;"></span>
         </div>
-    </div>
 
-    <button id="download-btn" class="btn-pdf" onclick="downloadPDF()">
-        📄 Download Laporan PDF
-    </button>
+        <div class="total-box">
+            <small>TARGET DAILY INTAKE</small>
+            <strong id="res_intake">0 kkal</strong>
+        </div>
+
+        <div class="res-grid">
+            <div class="res-card"><small>Est. Lemak Dibuang</small><span id="res_fat_loss">0</span> kg</div>
+            <div class="res-card"><small>Estimasi Waktu</small><span id="res_time">0</span> Minggu</div>
+        </div>
+
+        <div class="macro-grid">
+            <div class="macro-item" style="background:#eef2ff; color:#4338ca; border-color:#c7d2fe;"><span>PROTEIN</span><span id="m_prot">0</span>g</div>
+            <div class="macro-item" style="background:#f0fdf4; color:#15803d; border-color:#bbf7d0;"><span>LEMAK</span><span id="m_fat">0</span>g</div>
+            <div class="macro-item" style="background:#fffbeb; color:#b45309; border-color:#fde68a;"><span>KARBO</span><span id="m_carb">0</span>g</div>
+        </div>
+        
+        <div id="chart-container">
+            <canvas id="macroPieChart"></canvas>
+        </div>
+
+        <div id="display_note" class="trainer-note-area" style="display: none;">
+            <strong>Catatan Strategis Trainer:</strong>
+            <div id="note_content"></div>
+        </div>
+        
+        <p style="font-size: 0.6rem; color: #94a3b8; text-align: center; margin-top: 20px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+            Rai Institute Standard Analysis
+        </p>
+    </div>
 </div>
 
 <script>
@@ -146,52 +151,62 @@
         const note = document.getElementById('trainer_input').value;
 
         if (!weight || !bf || !targetBf) {
-            alert("Harap lengkapi data input!");
+            alert("Harap lengkapi data: Berat, Lemak %, dan Target %!");
             return;
         }
 
+        // 1. Kalkulasi Dasar
         const lbm = weight * (1 - (bf/100));
         const bmr = lbm * 22;
         const tee = bmr + (bmr * 0.1) + (bmr * neat) + eat;
         
-        // Langkah 1: Defisit Strategis (Antisipasi Plateau)
+        // 2. Strategi Defisit (Langkah Antisipatif)
+        // Jika Body Fat rendah (<18%), gunakan defisit tipis untuk menjaga otot (Recomp)
         let deficit = bf <= 18 ? 150 : 400;
+        
         const modeLabel = document.getElementById('mode_label');
-        modeLabel.innerText = bf <= 18 ? "Recomposition Mode" : "Fat Loss Mode";
-        modeLabel.className = bf <= 18 ? "mode-badge mode-recomp" : "mode-badge mode-fatloss";
+        if (bf <= 18) {
+            modeLabel.innerText = "Recomposition Mode";
+            modeLabel.className = "mode-badge mode-recomp";
+        } else {
+            modeLabel.innerText = "Fat Loss Mode";
+            modeLabel.className = "mode-badge mode-fatloss";
+        }
 
         const intake = tee - deficit;
         const targetWeight = lbm / (1 - (targetBf/100));
         const fatLoss = Math.max(0, weight - targetWeight);
         const weeks = Math.ceil(fatLoss / 0.5);
 
-        // Makro
-        const p = lbm * 2.2; 
-        const f = (intake * 0.25) / 9;
-        const c = Math.max(30, (intake - (p*4) - (f*9)) / 4);
+        // 3. Makronutrien
+        const p_g = lbm * 2.2; 
+        const f_g = (intake * 0.25) / 9;
+        const c_g = Math.max(30, (intake - (p_g * 4) - (f_g * 9)) / 4);
 
-        // UI Update
+        // 4. Update UI
         document.getElementById('res_name').innerText = name;
         document.getElementById('res_date').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
         document.getElementById('res_intake').innerText = Math.round(intake) + " kkal";
         document.getElementById('res_fat_loss').innerText = fatLoss.toFixed(1);
         document.getElementById('res_time').innerText = weeks;
-        document.getElementById('m_prot').innerText = Math.round(p);
-        document.getElementById('m_fat').innerText = Math.round(f);
-        document.getElementById('m_carb').innerText = Math.round(c);
+        document.getElementById('m_prot').innerText = Math.round(p_g);
+        document.getElementById('m_fat').innerText = Math.round(f_g);
+        document.getElementById('m_carb').innerText = Math.round(c_g);
 
+        // Catatan Trainer
         if(note.trim() !== "") {
-            document.getElementById('display_note').innerText = `"${note}"`;
+            document.getElementById('note_content').innerText = note;
             document.getElementById('display_note').style.display = 'block';
         } else {
             document.getElementById('display_note').style.display = 'none';
         }
 
         document.getElementById('results').style.display = 'block';
-        document.getElementById('download-btn').style.display = 'flex';
         
-        // Render Grafik Tanpa Animasi & Tanpa Tooltip (Langkah 2)
-        updateChart(p, f, c);
+        // Render Grafik
+        updateChart(p_g, f_g, c_g);
+        
+        // Scroll otomatis ke hasil
         document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
 
@@ -202,7 +217,8 @@
             datasets: [{
                 data: [p*4, f*9, c*4],
                 backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'],
-                borderWidth: 0
+                borderWidth: 0,
+                hoverOffset: 4
             }]
         };
 
@@ -213,32 +229,11 @@
             data: data,
             options: {
                 responsive: true,
-                animation: false, // Penting: Agar PDF tidak menangkap grafik kosong saat animasi
+                maintainAspectRatio: true,
                 plugins: {
-                    legend: { position: 'bottom' },
-                    tooltip: { enabled: false } // Penting: Menghilangkan teks melayang saat PDF di-generate
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, font: { size: 11 } } }
                 }
             }
-        });
-    }
-
-    function downloadPDF() {
-        const btn = document.getElementById('download-btn');
-        btn.style.display = 'none'; // Sembunyikan tombol saat proses
-
-        const element = document.getElementById('capture-area');
-        const name = document.getElementById('client_name').value || "Client";
-        
-        const opt = {
-            margin: 10,
-            filename: `Program_Strategis_${name}.pdf`,
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            btn.style.display = 'flex';
         });
     }
 </script>
