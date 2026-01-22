@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional PT Planner - Rai Institute Standard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --text: #0f172a; --accent: #10b981; }
+        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 480px; }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 5px; }
+        .subtitle { text-align: center; font-size: 0.75rem; color: #64748b; margin-bottom: 20px; text-transform: uppercase; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.8rem; color: #475569; }
+        input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 0.95rem; }
+        button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .result-section { margin-top: 25px; display: none; background: white; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; }
+        .client-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .client-header h3 { margin: 0; color: var(--primary); text-transform: uppercase; }
+        .total-box { background: var(--primary); color: white; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .total-box strong { font-size: 1.5rem; display: block; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .res-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .res-card small { display: block; font-size: 0.65rem; color: #64748b; font-weight: bold; }
+        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; } /* Added margin-bottom for spacing */
+        .macro-item { background: #f0fdf4; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #dcfce7; }
+        .macro-item span { display: block; font-size: 0.65rem; color: #166534; font-weight: bold; }
+        .macro-item strong { font-size: 1.1rem; color: var(--accent); }
+        /* Style untuk canvas grafik */
+        #macroPieChart { max-width: 100%; height: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Trainer Strategic Tool 🚀</h2>
+    <p class="subtitle">Personalized Client Plan</p>
+    <div class="input-group"><label>Nama Klien</label><input type="text" id="client_name" placeholder="Nama Klien"></div>
+    <div style="display: flex; gap: 10px;">
+        <div class="input-group" style="flex: 1;"><label>Berat (kg)</label><input type="number" id="weight" placeholder="90"></div>
+        <div class="input-group" style="flex: 1;"><label>Lemak (%)</label><input type="number" id="bodyfat" placeholder="35"></div>
+    </div>
+    <div class="input-group">
+        <label>Rasio Protein (g/kg LBM)</label>
+        <select id="p_ratio">
+            <option value="1.8">1.8g (Moderate)</option>
+            <option value="2.0" selected>2.0g (Optimal Fat Loss)</option>
+            <option value="2.2">2.2g (High Intensity)</option>
+        </select>
+    </div>
+    <div class="input-group">
+        <label>Alokasi Lemak (%)</label>
+        <select id="f_ratio">
+            <option value="0.25">25% (Standar)</option>
+            <option value="0.30">30% (Kenyang Lama)</option>
+        </select>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <div class="input-group" style="flex: 1;"><label>NEAT</label><select id="neat_lvl"><option value="0.1">10%</option><option value="0.2">20%</option><option value="0.3">30%</option></select></div>
+        <div class="input-group" style="flex
