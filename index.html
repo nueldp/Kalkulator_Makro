@@ -9,58 +9,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        :root { --primary: #4f46e5; --bg: #f1f5f9; --text: #0f172a; --accent: #10b981; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); padding: 10px; display: flex; justify-content: center; min-height: 100vh; margin: 0; }
+        :root { --primary: #4f46e5; --bg: #f1f5f9; --text: #0f172a; --accent: #10b981; --warning: #f59e0b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); padding: 10px; display: flex; justify-content: center; min-height: 100vh; margin: 0; }
         .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 450px; box-sizing: border-box; }
         
         h2 { text-align: center; color: var(--primary); margin: 0; font-size: 1.5rem; }
-        .subtitle { text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 15px; text-transform: uppercase; }
+        .subtitle { text-align: center; font-size: 0.7rem; color: #64748b; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
         
         .input-group { margin-bottom: 10px; }
         label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 0.75rem; color: #475569; }
-        input, select { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; transition: 0.3s; }
+        textarea { resize: none; font-family: inherit; }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
         
         .btn-main { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* Tombol Download PDF - Diperbaiki */
-        .btn-pdf { 
-            width: 100%; 
-            padding: 14px; 
-            background: #0f172a; 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            font-size: 1rem; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 20px; 
-            display: none; /* Akan muncul via JS */
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        .btn-pdf { width: 100%; padding: 14px; background: #0f172a; color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 20px; display: none; align-items: center; justify-content: center; gap: 10px; }
 
+        /* Hasil Area - Dioptimalkan untuk PDF */
         .result-section { margin-top: 20px; display: none; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; }
-        
         .mode-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; }
         .mode-fatloss { background: #fee2e2; color: #ef4444; }
         .mode-recomp { background: #dcfce7; color: #166534; border: 1px solid #166534; }
 
-        .client-header { border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .client-header { border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
         .client-header h3 { margin: 0; color: var(--primary); text-transform: uppercase; font-size: 1.1rem; }
 
-        .total-box { background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 15px; }
+        .total-box { background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-align: center; margin-bottom: 12px; }
         .total-box strong { font-size: 1.4rem; display: block; }
 
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         .res-card { background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; text-align: center; }
         .res-card small { display: block; font-size: 0.6rem; color: #64748b; font-weight: bold; }
+        .res-card span { font-weight: bold; }
 
-        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .macro-item { padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; font-weight: bold; }
+        .macro-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .macro-item { padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; font-weight: bold; font-size: 0.9rem; }
         
-        #chart-container { width: 100%; max-width: 250px; margin: 15px auto; }
+        #chart-container { width: 100%; max-width: 230px; margin: 10px auto; }
+        .trainer-note-area { margin-top: 15px; padding: 10px; background: #fffbeb; border-left: 4px solid var(--warning); border-radius: 4px; font-size: 0.8rem; font-style: italic; }
     </style>
 </head>
 <body>
@@ -71,34 +57,40 @@
 
     <div class="input-group">
         <label>Nama Klien</label>
-        <input type="text" id="client_name" placeholder="Nama...">
+        <input type="text" id="client_name" placeholder="Nama Klien...">
     </div>
 
     <div style="display: flex; gap: 10px;">
         <div class="input-group" style="flex: 1;"><label>Berat (kg)</label><input type="number" id="weight" placeholder="60"></div>
-        <div class="input-group" style="flex: 1;"><label>Lemak (%)</label><input type="number" id="bodyfat" placeholder="17"></div>
+        <div class="input-group" style="flex: 1;"><label>Body Fat (%)</label><input type="number" id="bodyfat" placeholder="17"></div>
     </div>
 
     <div style="display: flex; gap: 10px;">
         <div class="input-group" style="flex: 1;">
             <label>NEAT</label>
             <select id="neat_lvl">
-                <option value="0.1">10%</option>
-                <option value="0.2" selected>20%</option>
+                <option value="0.1">10% (Sedentary)</option>
+                <option value="0.2" selected>20% (Active)</option>
+                <option value="0.3">30% (Very Active)</option>
             </select>
         </div>
         <div class="input-group" style="flex: 1;">
-            <label>EAT</label>
+            <label>EAT (Latihan)</label>
             <select id="eat_lvl">
-                <option value="300">300</option>
-                <option value="500">500</option>
+                <option value="300">300 kcal</option>
+                <option value="500" selected>500 kcal</option>
             </select>
         </div>
     </div>
 
     <div class="input-group">
-        <label>Target Lemak (%)</label>
-        <input type="number" id="target_bf" placeholder="8">
+        <label>Target Body Fat (%)</label>
+        <input type="number" id="target_bf" placeholder="Contoh: 10">
+    </div>
+
+    <div class="input-group">
+        <label>Catatan Strategis Trainer (Opsional)</label>
+        <textarea id="trainer_input" rows="2" placeholder="Tulis pesan penyemangat atau fokus latihan minggu ini..."></textarea>
     </div>
 
     <button class="btn-main" onclick="calculate()">Generate Program 🚀</button>
@@ -108,25 +100,31 @@
             <div id="mode_label" class="mode-badge">MODE</div>
             <div class="client-header">
                 <h3 id="res_name">NAMA</h3>
-                <span id="res_date" style="font-size: 0.7rem;"></span>
+                <span id="res_date" style="font-size: 0.7rem; color: #64748b;"></span>
             </div>
 
             <div class="total-box">Target Intake: <strong id="res_intake">0</strong></div>
 
             <div class="res-grid">
-                <div class="res-card"><small>LEMAK DIBUANG</small><span id="res_fat_loss">0</span> kg</div>
+                <div class="res-card"><small>EST. FAT LOSS</small><span id="res_fat_loss">0</span> kg</div>
                 <div class="res-card"><small>EST. WAKTU</small><span id="res_time">0</span> Minggu</div>
             </div>
 
             <div class="macro-grid">
-                <div class="macro-item" style="background:#eef2ff; color:#4338ca;"><span>P: </span><span id="m_prot">0</span>g</div>
-                <div class="macro-item" style="background:#f0fdf4; color:#15803d;"><span>L: </span><span id="m_fat">0</span>g</div>
-                <div class="macro-item" style="background:#fffbeb; color:#b45309;"><span>K: </span><span id="m_carb">0</span>g</div>
+                <div class="macro-item" style="background:#eef2ff; color:#4338ca;">P: <span id="m_prot">0</span>g</div>
+                <div class="macro-item" style="background:#f0fdf4; color:#15803d;">L: <span id="m_fat">0</span>g</div>
+                <div class="macro-item" style="background:#fffbeb; color:#b45309;">K: <span id="m_carb">0</span>g</div>
             </div>
             
             <div id="chart-container">
                 <canvas id="macroPieChart"></canvas>
             </div>
+
+            <div id="display_note" class="trainer-note-area" style="display: none;"></div>
+            
+            <p style="font-size: 0.55rem; color: #94a3b8; text-align: center; margin-top: 15px; border-top: 1px dotted #e2e8f0; padding-top: 10px;">
+                Analisis Strategis - Rai Institute Standard - Dibuat secara otomatis untuk presisi diet.
+            </p>
         </div>
     </div>
 
@@ -145,9 +143,10 @@
         const targetBf = parseFloat(document.getElementById('target_bf').value);
         const neat = parseFloat(document.getElementById('neat_lvl').value);
         const eat = parseFloat(document.getElementById('eat_lvl').value);
+        const note = document.getElementById('trainer_input').value;
 
         if (!weight || !bf || !targetBf) {
-            alert("Isi data dengan lengkap!");
+            alert("Harap lengkapi data input!");
             return;
         }
 
@@ -155,8 +154,8 @@
         const bmr = lbm * 22;
         const tee = bmr + (bmr * 0.1) + (bmr * neat) + eat;
         
-        // Strategi Recomp vs Fat Loss
-        let deficit = bf <= 18 ? 150 : 350;
+        // Langkah 1: Defisit Strategis (Antisipasi Plateau)
+        let deficit = bf <= 18 ? 150 : 400;
         const modeLabel = document.getElementById('mode_label');
         modeLabel.innerText = bf <= 18 ? "Recomposition Mode" : "Fat Loss Mode";
         modeLabel.className = bf <= 18 ? "mode-badge mode-recomp" : "mode-badge mode-fatloss";
@@ -169,11 +168,11 @@
         // Makro
         const p = lbm * 2.2; 
         const f = (intake * 0.25) / 9;
-        const c = (intake - (p*4) - (f*9)) / 4;
+        const c = Math.max(30, (intake - (p*4) - (f*9)) / 4);
 
         // UI Update
         document.getElementById('res_name').innerText = name;
-        document.getElementById('res_date').innerText = new Date().toLocaleDateString('id-ID');
+        document.getElementById('res_date').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
         document.getElementById('res_intake').innerText = Math.round(intake) + " kkal";
         document.getElementById('res_fat_loss').innerText = fatLoss.toFixed(1);
         document.getElementById('res_time').innerText = weeks;
@@ -181,9 +180,17 @@
         document.getElementById('m_fat').innerText = Math.round(f);
         document.getElementById('m_carb').innerText = Math.round(c);
 
+        if(note.trim() !== "") {
+            document.getElementById('display_note').innerText = `"${note}"`;
+            document.getElementById('display_note').style.display = 'block';
+        } else {
+            document.getElementById('display_note').style.display = 'none';
+        }
+
         document.getElementById('results').style.display = 'block';
-        document.getElementById('download-btn').style.display = 'flex'; // Munculkan tombol download
+        document.getElementById('download-btn').style.display = 'flex';
         
+        // Render Grafik Tanpa Animasi & Tanpa Tooltip (Langkah 2)
         updateChart(p, f, c);
         document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
     }
@@ -194,24 +201,45 @@
             labels: ['Protein', 'Lemak', 'Karbo'],
             datasets: [{
                 data: [p*4, f*9, c*4],
-                backgroundColor: ['#4f46e5', '#10b981', '#f59e0b']
+                backgroundColor: ['#4f46e5', '#10b981', '#f59e0b'],
+                borderWidth: 0
             }]
         };
+
         if (macroChart) { macroChart.destroy(); }
-        macroChart = new Chart(ctx, { type: 'doughnut', data: data });
+        
+        macroChart = new Chart(ctx, { 
+            type: 'doughnut', 
+            data: data,
+            options: {
+                responsive: true,
+                animation: false, // Penting: Agar PDF tidak menangkap grafik kosong saat animasi
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { enabled: false } // Penting: Menghilangkan teks melayang saat PDF di-generate
+                }
+            }
+        });
     }
 
     function downloadPDF() {
+        const btn = document.getElementById('download-btn');
+        btn.style.display = 'none'; // Sembunyikan tombol saat proses
+
         const element = document.getElementById('capture-area');
         const name = document.getElementById('client_name').value || "Client";
+        
         const opt = {
             margin: 10,
-            filename: `Program_${name}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            filename: `Program_Strategis_${name}.pdf`,
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(element).save();
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.style.display = 'flex';
+        });
     }
 </script>
 </body>
