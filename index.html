@@ -57,4 +57,145 @@
     </div>
     <div style="display: flex; gap: 10px;">
         <div class="input-group" style="flex: 1;"><label>NEAT</label><select id="neat_lvl"><option value="0.1">10%</option><option value="0.2">20%</option><option value="0.3">30%</option></select></div>
-        <div class="input-group" style="flex
+        <div class="input-group" style="flex: 1;"><label>EAT</label><select id="eat_lvl"><option value="300">300</option><option value="500">500</option></select></div>
+    </div>
+    <div class="input-group"><label>Target Lemak (%)</label><input type="number" id="target_bf" placeholder="25"></div>
+    <button onclick="calculate()">Generate Program</button>
+
+    <div class="result-section" id="results">
+        <div class="client-header"><span id="res_date"></span><h3 id="res_name">NAMA</h3></div>
+        <div class="total-box">Target Intake: <strong id="res_intake">0</strong></div>
+        <div class="res-grid">
+            <div class="res-card"><small>LEMAK DIBUANG</small><span id="res_fat_loss">0</span> kg</div>
+            <div class="res-card"><small>EST. WAKTU</small><span id="res_time">0</span> Minggu</div>
+        </div>
+        <div class="macro-grid">
+            <div class="macro-item"><span>PROTEIN</span><strong id="m_prot">0</strong>g</div>
+            <div class="macro-item"><span>LEMAK</span><strong id="m_fat">0</strong>g</div>
+            <div class="macro-item"><span>KARBO</span><strong id="m_carb">0</strong>g</div>
+        </div>
+        <canvas id="macroPieChart"></canvas>
+    </div>
+</div>
+<script>
+    let macroChart; // Variabel global untuk menyimpan instance chart
+
+    function calculate() {
+        const name = document.getElementById('client_name').value || "CLIENT NAME";
+        const weight = parseFloat(document.getElementById('weight').value);
+        const bf = parseFloat(document.getElementById('bodyfat').value) / 100;
+        const targetBf = parseFloat(document.getElementById('target_bf').value) / 100;
+        const pRatio = parseFloat(document.getElementById('p_ratio').value);
+        const fRatio = parseFloat(document.getElementById('f_ratio').value);
+        const neatMult = parseFloat(document.getElementById('neat_lvl').value);
+        const eatVal = parseFloat(document.getElementById('eat_lvl').value);
+
+        // Validasi input
+        if (isNaN(weight) || isNaN(bf) || isNaN(targetBf) || isNaN(pRatio) || isNaN(fRatio) || isNaN(neatMult) || isNaN(eatVal)) {
+            alert("Harap lengkapi semua data input yang valid (angka).");
+            return; // Hentikan fungsi jika ada input tidak valid
+        }
+
+        const lbm = weight * (1 - bf);
+        const bmr = lbm * 22;
+        const tee = bmr + (bmr * 0.1) + (bmr * neatMult) + eatVal;
+        const intake = tee - 300; 
+
+        const targetWeight = lbm / (1 - targetBf);
+        const fatToLose = weight - targetWeight;
+        const weeks = Math.ceil(fatToLose / 0.5);
+
+        const prot_g = lbm * pRatio;
+        const fat_g = (intake * fRatio) / 9;
+        const carb_kcal = intake - (prot_g * 4) - (fat_g * 9);
+        const carb_g = carb_kcal < 0 ? 0 : carb_kcal / 4; // Safety guard untuk karbohidrat
+
+        // Peringatan jika karbohidrat terlalu rendah
+        if (carb_g < 50 && carb_g > 0) {
+            alert("Peringatan Strategis: Karbohidrat terhitung cukup rendah (" + Math.round(carb_g) + "g). Pertimbangkan menyesuaikan rasio Lemak atau Protein untuk performa yang lebih baik.");
+        } else if (carb_g === 0) {
+            alert("Peringatan Strategis: Karbohidrat terhitung 0g atau negatif. Ini mungkin mengindikasikan target kalori terlalu rendah atau rasio makro lain terlalu tinggi.");
+        }
+
+
+        document.getElementById('res_name').innerText = name;
+        document.getElementById('res_date').innerText = new Date().toLocaleDateString('id-ID');
+        document.getElementById('res_intake').innerText = Math.round(intake) + " kkal";
+        document.getElementById('res_fat_loss').innerText = fatToLose.toFixed(1);
+        document.getElementById('res_time').innerText = weeks;
+        document.getElementById('m_prot').innerText = Math.round(prot_g);
+        document.getElementById('m_fat').innerText = Math.round(fat_g);
+        document.getElementById('m_carb').innerText = Math.round(carb_g);
+        document.getElementById('results').style.display = 'block';
+
+        // --- Update atau Buat Grafik Pie ---
+        const ctx = document.getElementById('macroPieChart').getContext('2d');
+        const totalCalories = (prot_g * 4) + (fat_g * 9) + (carb_g * 4); // Kalori aktual dari makro
+
+        const macroData = {
+            labels: ['Protein', 'Lemak', 'Karbohidrat'],
+            datasets: [{
+                data: [
+                    (prot_g * 4), // Kalori dari Protein
+                    (fat_g * 9),  // Kalori dari Lemak
+                    (carb_g * 4)  // Kalori dari Karbohidrat
+                ],
+                backgroundColor: [
+                    'rgba(79, 70, 229, 0.8)', // Primary color for Protein
+                    'rgba(16, 185, 129, 0.8)', // Accent color for Fat
+                    'rgba(251, 191, 36, 0.8)' // A warm color for Carbs
+                ],
+                borderColor: [
+                    '#ffffff',
+                    '#ffffff',
+                    '#ffffff'
+                ],
+                borderWidth: 2
+            }]
+        };
+
+        if (macroChart) {
+            // Jika chart sudah ada, update datanya
+            macroChart.data = macroData;
+            macroChart.update();
+        } else {
+            // Jika chart belum ada, buat yang baru
+            macroChart = new Chart(ctx, {
+                type: 'pie',
+                data: macroData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribusi Kalori Makronutrien',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#0f172a'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        const value = context.parsed;
+                                        const percentage = ((value / totalCalories) * 100).toFixed(1);
+                                        label += `${value.toFixed(0)} kkal (${percentage}%)`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
